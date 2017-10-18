@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 public class Utilities {
 
+    //can use the below four members across apps :)
     static ArrayList<String> lstPermissionsMissing = new ArrayList<>();
     //Add all permissions needed by the app here
 
