@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:context="in.appfocus.reachable.MainActivity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:orientation="vertical">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Enable/Disable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Switch
+                android:id="@+id/swReceiver"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:checked="false" />
+        </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_marginTop="25dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="Send Auto Response SMS"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Switch
+            android:id="@+id/swAutoResponseSMS"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            tools:checked="false"/>
+    </LinearLayout>
+
+    </LinearLayout>
