@@ -3,16 +3,38 @@ package in.appfocus.reachable;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.widget.Toast;
+import android.content.SharedPreferences;
+
+
+import static android.provider.Telephony.Sms.Intents.SMS_RECEIVED_ACTION;
 
 /**
  * Created by User on 18-10-2017.
  */
 
 public class MyReceiver extends BroadcastReceiver {
+    SharedPreferences sp;
+    SharedPreferences.Editor editor;
+
+    Context context;
+
+    public MyReceiver(){
+
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        // TODO: 18-10-2017 differentiate between sms received call received events and call appr function
+
+        this.context = context;
+        String strAction=intent.getAction();
+
+        if(strAction.equals(SMS_RECEIVED_ACTION)){
+            //android.provider.Telephony.SMS_RECEIVED
+            smsReceived();
+        }else{
+            //android.intent.action.PHONE_STATE
+            callReceived();
+        }
     }
     
     private void smsReceived(){
@@ -20,7 +42,11 @@ public class MyReceiver extends BroadcastReceiver {
     }
     
     private void callReceived(){
-        // TODO: 18-10-2017 if auto response is enabled, send sms to the caller 
+        sp=context.getApplicationContext().getSharedPreferences("myPreferences",0);
+        Boolean isSwAutoResponseEnabled = sp.getBoolean("isSwAutoResponseEnabled",false);
+        if(isSwAutoResponseEnabled){
+            sendSMStoCaller();
+        }
     }
     
     private void sendSMStoCaller(){
