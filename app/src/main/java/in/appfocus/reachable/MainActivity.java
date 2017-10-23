@@ -1,10 +1,12 @@
 package in.appfocus.reachable;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -20,9 +22,15 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences sp;
     SharedPreferences.Editor editor;
 
+    Intent intent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.d("mytag","oncreate");
+        Log.d("mytag",String.valueOf(this.hashCode()));
+
         setContentView(R.layout.activity_main);
 
         if(!Utilities.hasAllPermissions(getApplicationContext()))
@@ -42,6 +50,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         recallSwitchStates();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("mytag","mainactivity-destroyed");
     }
 
     private void initSwitches(){
