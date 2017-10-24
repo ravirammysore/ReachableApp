@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -28,7 +29,8 @@ public class Utilities {
     public static String[] PERMISSIONS_ALL = {
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.RECEIVE_SMS,
-            Manifest.permission.SEND_SMS
+            Manifest.permission.SEND_SMS,
+            Manifest.permission.MODIFY_AUDIO_SETTINGS
     };
 
     public static boolean hasAllPermissions(Context context) {
@@ -66,5 +68,15 @@ public class Utilities {
         catch (Exception ex){
             Toast.makeText(activity, "Error while requesting permissions", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public static void putPhoneToSilentMode(Context context){
+        AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+    }
+
+    public static void putPhoneToSNormalMode(Context context){
+        AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
     }
 }

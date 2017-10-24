@@ -16,7 +16,7 @@ public class AlertActivity extends AppCompatActivity {
 
         setTitle("");
 
-        mp = MediaPlayer.create(this, R.raw.schoolsiren);
+        mp = MediaPlayer.create(this, R.raw.siren10sec);
         mp.setLooping(true);
         // TODO: 24/10/17 player does not play when locked :(
 

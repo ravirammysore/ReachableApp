@@ -15,7 +15,6 @@ import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.widget.Toast;
 
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -27,7 +26,6 @@ import static android.provider.Telephony.Sms.Intents.SMS_RECEIVED_ACTION;
 
 public class MyReceiver extends BroadcastReceiver {
     SharedPreferences sp;
-    SharedPreferences.Editor editor;
 
     Context context;
     Intent intent;
@@ -123,38 +121,26 @@ public class MyReceiver extends BroadcastReceiver {
 
         Log.d("mytag","attempting to start alarm...");
 
-        //approach 1
-        //show a notification with alarm
-        //not a good approach as the SMS notification sound will stop this notification sound!
-
-        /*Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-
-        Notification n  = new Notification.Builder(context)
+        Notification notification  = new Notification.Builder(context)
                 .setContentTitle("Reachable")
                 .setContentText("You have an urgent SMS!")
-                .setSmallIcon(R.drawable.ic_stat_error_outline)
-                .setSound(Uri.parse("android.resource://"
-                        + context.getPackageName() + "/" + R.raw.siren))
-                //.setSound(alarmSound)
-                .setAutoCancel(false)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setAutoCancel(true)
                 .build();
 
 
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
-        notificationManager.notify(1200, n);*/
+        notificationManager.notify(100, notification);
 
         //approach 2
-        //works well, but no UI to stop - not a good design!
-
-        // TODO: 24/10/17 we will still consider this for now :)
+        //works well, but no UI to stop - not a good design, but ok for now!
 
         //// TODO: 24/10/17 show a notification first and then start media player,
-        //// use a file which is around 6 to 8 seconds
 
-        // TODO: 24/10/17 increase all volumes before this
-        mp = MediaPlayer.create(context, R.raw.schoolsiren);
+        Utilities.putPhoneToSNormalMode(context);
+        mp = MediaPlayer.create(context, R.raw.siren10sec);
         mp.start();
 
         //approach 3
