@@ -72,6 +72,7 @@ public class Utilities {
 
     public static void putPhoneToSilentMode(Context context){
         AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+        //android doc says it will NOT vibrate, put Redmi does vibrate!!
         audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
     }
 
