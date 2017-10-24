@@ -93,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void swReceiverStatusChanged(Boolean status){
+        // TODO: 24/10/17 start a sticky notification (which will open our app when clicked)
+        // TODO: 24/10/17 implement the putPhoneOnSilentMode  
         if(status==true){
             if(intReceiverStatus != PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
                 pm.setComponentEnabledSetting(SMSReceiverComponent,
@@ -108,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
             swAutoResponseSMS.setEnabled(true);
         }
         else{
+            // TODO: 24/10/17 remove the sticky notification 
+            // TODO: 24/10/17 implement the putPhoneOnNormalMode 
             if (intReceiverStatus != PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
                 pm.setComponentEnabledSetting(SMSReceiverComponent,
                         PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
@@ -130,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void putPhoneOnSilentMode(){
-        // TODO: 18-10-2017 reduce the ringer volume to min
     }
     
     private void putPhoneOnNormalMode(){

@@ -6,6 +6,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Telephony;
@@ -16,6 +18,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 
+import static android.content.Context.NOTIFICATION_SERVICE;
 import static android.provider.Telephony.Sms.Intents.SMS_RECEIVED_ACTION;
 
 /**
@@ -28,6 +31,8 @@ public class MyReceiver extends BroadcastReceiver {
 
     Context context;
     Intent intent;
+
+    MediaPlayer mp;
 
     public MyReceiver(){
 
@@ -117,22 +122,51 @@ public class MyReceiver extends BroadcastReceiver {
         * */
 
         Log.d("mytag","attempting to start alarm...");
-        // TODO: 23/10/17 start a service to play alarm
 
         //approach 1
         //show a notification with alarm
+        //not a good approach as the SMS notification sound will stop this notification sound!
+
+        /*Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+
+        Notification n  = new Notification.Builder(context)
+                .setContentTitle("Reachable")
+                .setContentText("You have an urgent SMS!")
+                .setSmallIcon(R.drawable.ic_stat_error_outline)
+                .setSound(Uri.parse("android.resource://"
+                        + context.getPackageName() + "/" + R.raw.siren))
+                //.setSound(alarmSound)
+                .setAutoCancel(false)
+                .build();
+
+
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+
+        notificationManager.notify(1200, n);*/
 
         //approach 2
-        // TODO: 23/10/17 remove this later?
-        /*final PendingResult result = goAsync();
-        Thread thread = new Thread() {
-            public void run() {
-                int i;
-                // Do processing
+        //works well, but no UI to stop - not a good design!
 
-                result.finish();
-            }
-        };
-        thread.start();*/
+        // TODO: 24/10/17 we will still consider this for now :)
+
+        //// TODO: 24/10/17 show a notification first and then start media player,
+        //// use a file which is around 6 to 8 seconds
+
+        // TODO: 24/10/17 increase all volumes before this
+        mp = MediaPlayer.create(context, R.raw.schoolsiren);
+        mp.start();
+
+        //approach 3
+
+        //approach seems good, i have also set the AlertActivity launch mode to SingleInstance
+        // in the manifest and verified that it is being launched only once in spite of receiving multiple messages back to back
+
+        //but media player won't play when locked :(
+
+        /*Intent intent = new Intent(context,AlertActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);*/
+
     }
 }
