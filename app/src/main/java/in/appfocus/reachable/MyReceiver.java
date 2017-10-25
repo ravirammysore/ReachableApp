@@ -121,19 +121,6 @@ public class MyReceiver extends BroadcastReceiver {
 
         Log.d("mytag","attempting to start alarm...");
 
-        Notification notification  = new Notification.Builder(context)
-                .setContentTitle("Reachable")
-                .setContentText("You have an urgent SMS!")
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setAutoCancel(true)
-                .build();
-
-
-        NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-
-        notificationManager.notify(100, notification);
-
         //approach 2
         //works well, but no UI to stop - not a good design, but ok for now!
 
@@ -145,7 +132,7 @@ public class MyReceiver extends BroadcastReceiver {
 
         //approach 3
 
-        //approach seems good, i have also set the AlertActivity launch mode to SingleInstance
+        //approach seemed good, i have also set the AlertActivity launch mode to SingleInstance
         // in the manifest and verified that it is being launched only once in spite of receiving multiple messages back to back
 
         //but media player won't play when locked :(
