@@ -2,13 +2,13 @@ package in.appfocus.reachable;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Telephony;
 import android.telephony.SmsManager;
@@ -32,7 +32,9 @@ public class MyReceiver extends BroadcastReceiver {
 
     MediaPlayer mp;
 
-    public MyReceiver(){
+    String APP_NAME;
+
+    public MyReceiver() {
 
     }
 
@@ -41,19 +43,23 @@ public class MyReceiver extends BroadcastReceiver {
 
         this.context = context;
         this.intent = intent;
-        
-        String strAction=intent.getAction();
 
-        if(strAction.equals(SMS_RECEIVED_ACTION)){
-            //android.provider.Telephony.SMS_RECEIVED
+        APP_NAME = context.getResources().getString(R.string.app_name);
+
+        String strAction = intent.getAction();
+
+        if (strAction.equals(SMS_RECEIVED_ACTION)) {
             smsReceived();
-        }else{
-            //android.intent.action.PHONE_STATE
-            callReceived();
+        } else {
+            String stateStr = intent.getExtras().getString(TelephonyManager.EXTRA_STATE);
+            //VVIP: we need to respond only to RINGING and not to IDLE or any other states
+            if (stateStr != null && !stateStr.isEmpty() && stateStr.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
+                callReceived();
+            }
         }
     }
-    
-    private void smsReceived(){
+
+    private void smsReceived() {
 
         SmsMessage smsMessage;
         String strSMS;
@@ -67,41 +73,41 @@ public class MyReceiver extends BroadcastReceiver {
                 smsMessage = msgs[0];
                 strSMS = smsMessage.getDisplayMessageBody();
 
-                if(strSMS.toLowerCase().contains("urgent") || strSMS.toLowerCase().contains("emergency")) {
+                if (strSMS.toLowerCase().contains("urgent") || strSMS.toLowerCase().contains("emergency")) {
                     triggerAlarm();
+                    showNotification();
                 }
             }
-
-        }
-        catch (Exception e) {
-            Log.d("mytag",e.getMessage());
+        } catch (Exception e) {
+            Log.d("mytag", e.getMessage());
         }
     }
-    
-    private void callReceived(){
+
+    private void callReceived() {
         String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
         String incomingNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
 
-        if(state.equals(TelephonyManager.EXTRA_STATE_RINGING)){
-            sp=context.getApplicationContext().getSharedPreferences("myPreferences",0);
+        if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
+            /*sp=context.getApplicationContext().getSharedPreferences("myPreferences",0);
             Boolean isSwAutoResponseEnabled = sp.getBoolean("isSwAutoResponseEnabled",false);
             if(isSwAutoResponseEnabled){
                 sendSMStoCaller(incomingNumber);
-            }
+            }*/
+            sendSMStoCaller(incomingNumber);
         }
     }
-    
-    private void sendSMStoCaller(String caller){
+
+    private void sendSMStoCaller(String caller) {
         String smsMessage = "Sorry, I am busy. If really important, send an SMS saying urgent";
         try {
             SmsManager smsManager = SmsManager.getDefault();
             smsManager.sendTextMessage(caller, null, smsMessage, null, null);
         } catch (Exception e) {
-            Log.d("mytag",e.getMessage());
+            Log.d("mytag", e.getMessage());
         }
     }
-    
-    private void triggerAlarm(){
+
+    private void triggerAlarm() {
         /*
         https://developer.android.com/guide/components/broadcasts.html
 
@@ -119,15 +125,16 @@ public class MyReceiver extends BroadcastReceiver {
         broadcast very quickly (under 10 seconds)
         * */
 
-        Log.d("mytag","attempting to start alarm...");
+        Log.d("mytag", "attempting to start alarm...");
 
         //approach 2
         //works well, but no UI to stop - not a good design, but ok for now!
 
         //// TODO: 24/10/17 show a notification first and then start media player,
 
-        Utilities.putPhoneToSNormalMode(context);
-        mp = MediaPlayer.create(context, R.raw.siren10sec);
+        //Utilities.putPhoneToSNormalMode(context);
+        Utilities.increaseMediaVolume(context);
+        mp = MediaPlayer.create(context, R.raw.smartnap);
         mp.start();
 
         //approach 3
@@ -141,5 +148,21 @@ public class MyReceiver extends BroadcastReceiver {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);*/
 
+    }
+
+    private void showNotification() {
+
+        NotificationManager notificationManager;
+        notificationManager = (NotificationManager)
+                context.getSystemService(NOTIFICATION_SERVICE);
+
+        Notification.Builder builder = new Notification.Builder(context)
+                .setContentTitle(APP_NAME)
+                .setContentText("You received an urgent message!")
+                .setSmallIcon(R.drawable.ic_stat_error_outline)
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher));
+
+        Notification notification = builder.build();
+        notificationManager.notify(2000, notification);
     }
 }

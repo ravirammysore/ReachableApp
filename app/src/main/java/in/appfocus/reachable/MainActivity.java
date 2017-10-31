@@ -15,11 +15,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    Switch swReceiver,swAutoResponseSMS;
+    Switch swReceiver;
+    //i am removing this switch for now to make the "one touch"
+    //Switch swAutoResponseSMS;
 
     ComponentName SMSReceiverComponent;
     PackageManager pm;
@@ -32,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
 
     NotificationManager notificationManager;
 
+    public String APP_NAME;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
         Log.d("mytag","oncreateMain-"+this.hashCode());
 
         setContentView(R.layout.activity_main);
+
+        APP_NAME = getResources().getString(R.string.app_name);
 
         if(!Utilities.hasAllPermissions(getApplicationContext()))
             Utilities.requestMissingPermissions(this);
@@ -69,8 +76,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initSwitches(){
+        TextView tvSwitchName = (TextView)findViewById(R.id.tvSwitchName);
+        tvSwitchName.setText("Enable " + APP_NAME);
         swReceiver = (Switch)  findViewById(R.id.swReceiver);
-        swAutoResponseSMS = (Switch)  findViewById(R.id.swAutoResponseSMS);
 
         swReceiver.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -79,12 +87,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        swAutoResponseSMS.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        /*swAutoResponseSMS = (Switch)  findViewById(R.id.swAutoResponseSMS);
+
+          swAutoResponseSMS.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 swAutoResponseSMSStatusChanged(isChecked);
             }
-        });
+        });*/
     }
 
     private void recallSwitchStates(){
@@ -98,8 +108,8 @@ public class MainActivity extends AppCompatActivity {
             swReceiver.setChecked(false);
         }
 
-        Boolean isSwAutoResponseEnabled =sp.getBoolean("isSwAutoResponseEnabled",false);
-        swAutoResponseSMS.setChecked(isSwAutoResponseEnabled);
+        /*Boolean isSwAutoResponseEnabled =sp.getBoolean("isSwAutoResponseEnabled",false);
+        swAutoResponseSMS.setChecked(isSwAutoResponseEnabled);*/
     }
 
     private void swReceiverStatusChanged(Boolean status){
@@ -125,11 +135,13 @@ public class MainActivity extends AppCompatActivity {
 
             intReceiverStatus=PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
 
-            Toast.makeText(this, "Reachable is now enabled, You can close the app", Toast.LENGTH_LONG).show();
+            String msg = APP_NAME + " is now enabled, You can close the app";
+
+            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
         }
 
         //lets enable the switch, DO NOT on the switch! Leave it to the user to decide
-        swAutoResponseSMS.setEnabled(true);
+        /*swAutoResponseSMS.setEnabled(true);*/
     }
 
     private void disableReceiver(){
@@ -140,11 +152,13 @@ public class MainActivity extends AppCompatActivity {
 
             intReceiverStatus=PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
 
-            Toast.makeText(this, "Reachable is now disabled", Toast.LENGTH_LONG).show();
+            String msg = APP_NAME + " is now disabled";
+
+            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
         }
         //let's off auto response and disable the switch
-        swAutoResponseSMS.setChecked(false);
-        swAutoResponseSMS.setEnabled(false);
+       /* swAutoResponseSMS.setChecked(false);
+        swAutoResponseSMS.setEnabled(false);*/
     }
 
     private void swAutoResponseSMSStatusChanged(Boolean status){
@@ -160,11 +174,11 @@ public class MainActivity extends AppCompatActivity {
                 1234, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Notification.Builder builder = new Notification.Builder(this)
-                .setContentTitle("Reachable")
-                .setContentText("Emergency SMS alert enabled")
+                .setContentTitle(APP_NAME)
+                .setContentText("Phone is in " + APP_NAME.toLowerCase() + " mode")
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.ic_stat_error_outline)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher));
 
         Notification notification=builder.build();
 

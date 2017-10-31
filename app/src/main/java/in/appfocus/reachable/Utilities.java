@@ -80,4 +80,10 @@ public class Utilities {
         AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
         audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
     }
+
+    public static void increaseMediaVolume(Context context){
+        AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        int maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        audio.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0);
+    }
 }
