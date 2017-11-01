@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import static android.Manifest.permission.ACCESS_NOTIFICATION_POLICY;
+
 /**
  * Created by Ravi on 15/05/2017.
  */
@@ -30,7 +32,8 @@ public class Utilities {
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.RECEIVE_SMS,
             Manifest.permission.SEND_SMS,
-            Manifest.permission.MODIFY_AUDIO_SETTINGS
+            Manifest.permission.MODIFY_AUDIO_SETTINGS,
+            Manifest.permission.ACCESS_NOTIFICATION_POLICY
     };
 
     public static boolean hasAllPermissions(Context context) {
@@ -72,7 +75,6 @@ public class Utilities {
 
     public static void putPhoneToSilentMode(Context context){
         AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-        //android doc says it will NOT vibrate, put Redmi does vibrate!!
         audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
     }
 

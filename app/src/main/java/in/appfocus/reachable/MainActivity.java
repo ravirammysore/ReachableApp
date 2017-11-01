@@ -4,12 +4,12 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
-import android.support.v7.app.AlertDialog;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,7 +21,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
     Switch swReceiver;
-    //i am removing this switch for now to make the "one touch"
+    //i am removing this switch for now to make the app "one touch"
     //Switch swAutoResponseSMS;
 
     ComponentName SMSReceiverComponent;
@@ -30,8 +30,6 @@ public class MainActivity extends AppCompatActivity {
 
     SharedPreferences sp;
     SharedPreferences.Editor editor;
-
-    Intent intent;
 
     NotificationManager notificationManager;
 
@@ -114,16 +112,26 @@ public class MainActivity extends AppCompatActivity {
 
     private void swReceiverStatusChanged(Boolean status){
 
-        if(status==true){
+        try{
+            if(status==true){
+            //new approach starting from android 7.0
+            requestDNDAndThenDoOtherStuff();
+            }
+            else{
+            removeStickyNotification();
+            //no need of any permissions, since it would already be done while enabling
+            Utilities.putPhoneToSNormalMode(this);
 
-            enableReceiver();
-            showStickyNotification();
-            Utilities.putPhoneToSilentMode(this);
+            disableReceiver();
+            }
         }
-        else{
+        catch (Exception ex){
+            Toast.makeText(this, "Oops, There was an error!", Toast.LENGTH_SHORT).show();
+
+            //lets try and restore things back!
+            disableReceiver();
             removeStickyNotification();
             Utilities.putPhoneToSNormalMode(this);
-            disableReceiver();
         }
     }
 
@@ -191,4 +199,37 @@ public class MainActivity extends AppCompatActivity {
         notificationManager.cancel(1234);
     }
 
+    private void requestDNDAndThenDoOtherStuff() {
+        //no need of 'isNotificationPolicyAccessGranted' check
+        if( Build.VERSION.SDK_INT <=23 ) {
+            enableReceiver();
+            showStickyNotification();
+            Utilities.putPhoneToSilentMode(this);
+
+        }
+        else{
+            NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            if ( notificationManager.isNotificationPolicyAccessGranted()) {
+                enableReceiver();
+                showStickyNotification();
+                Utilities.putPhoneToSilentMode(this);
+            } else{
+                // Ask the user to grant access
+                Intent intent = new Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+                startActivityForResult( intent, 9999 );
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == 9999 ) {
+            // TODO: 01/11/2017 if user did not give permission,
+            // show a AlertDialogue and ask him to if he wants to grant permission
+            //if yes, call the function requestDNDAndThenDoOtherStuff again
+            //else show a toast saying app will close and finish this activity
+            this.requestDNDAndThenDoOtherStuff();
+        }
+    }
 }
