@@ -2,7 +2,6 @@ package in.appfocus.reachable;
 
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -32,7 +31,7 @@ public class MyReceiver extends BroadcastReceiver {
 
     MediaPlayer mp;
 
-    String APP_NAME;
+    String APP_NAME, AUTO_RESPONSE_MESSAGE;
 
     public MyReceiver() {
 
@@ -98,10 +97,11 @@ public class MyReceiver extends BroadcastReceiver {
     }
 
     private void sendSMStoCaller(String caller) {
-        String smsMessage = "Sorry, I am busy. If really important, send an SMS saying urgent";
+
         try {
+            AUTO_RESPONSE_MESSAGE = context.getResources().getString(R.string.auto_response_message);
             SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(caller, null, smsMessage, null, null);
+            smsManager.sendTextMessage(caller, null, AUTO_RESPONSE_MESSAGE, null, null);
         } catch (Exception e) {
             Log.d("mytag", e.getMessage());
         }

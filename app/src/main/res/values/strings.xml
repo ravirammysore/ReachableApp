@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">SmartNap</string>
+    <string name="app_name">SmartSilent</string>
+    <string name="auto_response_message">My phone is in Silent mode. If really urgent then alert me by sending an SMS with the word urgent in it!
+</string>
 </resources>
