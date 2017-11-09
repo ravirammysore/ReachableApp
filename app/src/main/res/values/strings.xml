@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">SmartSilent</string>
-    <string name="auto_response_message">My phone is in Silent mode. If really urgent then alert me by sending an SMS with the word urgent in it!
+    <string name="auto_response_message">My phone is in silent mode. If really urgent, alert me by sending an SMS with the word urgent in it! App downloaded from https://goo.gl/SbCjQd
 </string>
 </resources>

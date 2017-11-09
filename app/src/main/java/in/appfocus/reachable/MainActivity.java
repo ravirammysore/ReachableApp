@@ -5,18 +5,25 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
+import android.location.Address;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
 
         Log.d("mytag","oncreateMain-"+this.hashCode());
 
@@ -45,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         APP_NAME = getResources().getString(R.string.app_name);
 
+        //ask permissions
         if(!Utilities.hasAllPermissions(getApplicationContext()))
             Utilities.requestMissingPermissions(this);
 
@@ -65,6 +74,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         recallSwitchStates();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        //if user did not grant atleast one permission, close the app
+        if(!Utilities.hasAllPermissions(this))
+            showErrorMessageAndCloseApp();
     }
 
     @Override
@@ -215,21 +233,63 @@ public class MainActivity extends AppCompatActivity {
                 Utilities.putPhoneToSilentMode(this);
             } else{
                 // Ask the user to grant access
-                Intent intent = new Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
-                startActivityForResult( intent, 9999 );
+                AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+                alert.setTitle("Grant Permission");
+                alert.setMessage("Starting from Android 7.0, Users need to grant DND permission. " +
+                        "Without this the app will not work. Click OK to continue to settings " +
+                        "and grant permission for "+APP_NAME);
+
+                alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        Intent intent = new Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+                        startActivityForResult( intent, 9999 );
+                        //once we get the result, we will again call this function!
+                    }
+                });
+
+                alert.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        showErrorMessageAndCloseApp();
+                    }
+                });
+
+                alert.show();
             }
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Check which request we're responding to
-        if (requestCode == 9999 ) {
-            // TODO: 01/11/2017 if user did not give permission,
-            // show a AlertDialogue and ask him to if he wants to grant permission
-            //if yes, call the function requestDNDAndThenDoOtherStuff again
-            //else show a toast saying app will close and finish this activity
+        if (requestCode == 9999) {
             this.requestDNDAndThenDoOtherStuff();
         }
+    }
+
+    private void showErrorMessageAndCloseApp(){
+        Toast.makeText(this, "Error:Permission Denied", Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
+    public void tvInstructionsClicked(View v){
+        //startActivity(new Intent(this,AlertActivity.class));
+        AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+        alert.setTitle(APP_NAME);
+        alert.setMessage("Once enabled, It puts your phone to silent mode. When you receive a call, SmartSilent automatically sends an SMS to the caller saying \"My phone is in silent mode. If really urgent, alert me by sending an SMS with the word urgent in it" +
+                "\n\n" +
+                "In case any one sends an SMS to you with the word urgent in it, Your phone will alert you with an audible tone for a few times." +
+                "Please note that standard SMS charges may apply");
+
+        alert.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        alert.show();
+
     }
 }

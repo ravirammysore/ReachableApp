@@ -39,6 +39,10 @@
             android:excludeFromRecents="true"
             android:theme="@style/Dialogue">
         </activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="59efa2b51eeed1ef045eb0fd587fef6801a9bc57" />
     </application>
 
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
