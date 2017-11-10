@@ -31,14 +31,15 @@
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
                     android:text="ENABLE" />
-                <TextView
-                    android:layout_width="50dp"
-                    android:layout_marginLeft="15dp"
-                    android:textSize="15dp"
+                <Space
+                    android:layout_width="20dp"
+                    android:layout_height="20dp" />
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_gravity="center_vertical"
-                    android:text="?"
                     android:onClick="tvInstructionsClicked"
-                    android:layout_height="wrap_content" />
+                    android:src="@drawable/help" />
             </LinearLayout>
 
             <Switch
