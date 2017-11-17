@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     NotificationManager notificationManager;
 
     public String APP_NAME;
-
+    //negligible change
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
