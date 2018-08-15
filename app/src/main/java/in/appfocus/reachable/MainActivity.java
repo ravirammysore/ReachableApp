@@ -278,10 +278,9 @@ public class MainActivity extends AppCompatActivity {
         //startActivity(new Intent(this,AlertActivity.class));
         AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
         alert.setTitle(APP_NAME);
-        alert.setMessage("Once enabled, It puts your phone to silent mode. When you receive a call, SmartSilent automatically sends an SMS to the caller saying \"My phone is in silent mode. If really urgent, alert me by sending an SMS with the word urgent in it" +
+        alert.setMessage("Once enabled, It puts your phone to silent mode. When you receive a call, SmartSilent automatically sends an SMS to the caller saying \"My phone is in silent mode. If really urgent, alert me by sending an SMS with the word urgent in it\"" +
                 "\n\n" +
-                "In case any one sends an SMS to you with the word urgent in it, Your phone will alert you with an audible tone for a few times." +
-                "Please note that standard SMS charges may apply");
+                "In case any one sends an SMS to you with the word urgent in it, Your phone will alert you with an audible tone for a few times.");
 
         alert.setPositiveButton("Close", new DialogInterface.OnClickListener() {
             @Override
